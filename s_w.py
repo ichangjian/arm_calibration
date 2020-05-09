@@ -19,27 +19,27 @@ while 1:
     try:
         ret = str(conn.recv(1024),encoding="utf-8")
         if ret == "capfeimu":
-            f = os.popen(r".\capture_fe_imu  Y:\\", "r")
-		    n = f.read()
-		    f.close()
+            f = os.popen(r".\capture_fe_imu  D:\\buff\\", "r")
+            n = f.read()
+            f.close()
         if ret == "stopcapfeimu":
             f = os.popen(r".\stop_capture_fe_imu", "r")
-		    n = f.read()
-		    f.close()
+            n = f.read()
+            f.close()
         if ret == "capfe":
-            f = os.popen(r".\capture_fe Y:\\fe.png", "r")
-		    n = f.read()
-		    f.close()
+            f = os.popen(r".\capture_fe D:\\buff\\fe.png", "r")
+            n = f.read()
+            f.close()
         if ret == "caprgb":
-            f = os.popen(r".\capture_rgb Y:\\rgb.png", "r")
-		    n = f.read()
-		    f.close()
+            f = os.popen(r".\capture_rgb D:\\buff\\rgb.png", "r")
+            n = f.read()
+            f.close()
         if ret == "capimu":
             f = os.popen(r"capture_fe.exe save_name", "r")
-		    n = f.read()
-		    f.close()
+            n = f.read()
+            f.close()
         data = n +"ok"
         conn.sendall(bytes(data,encoding="utf-8"))
-    except Exception, e:
+    except Exception as e:
         client = None
 

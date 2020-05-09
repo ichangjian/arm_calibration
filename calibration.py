@@ -124,7 +124,7 @@ class calibration(QWidget):
         self.setLayout(layout)
 
 
-        self.kalibr_path = "/home/"+getpass.getuser()+"/G2_calibration/calib-template/"
+        self.kalibr_path = "/home/"+getpass.getuser()+"/new_G2/calib-template/"
         self.back_path = "/home/"+getpass.getuser()+"/server/"
         self.dutpath = '/storage/emulated/0/Android/data/com.tmac.camerapreview/files'
         self.no = ['0', '0000033330000', '0000066660000', '0000100000000', '0000133330000', '0000166660000', '0000200000000', '0000233330000', '0000266660000', '0000300000000',
@@ -175,8 +175,8 @@ class calibration(QWidget):
         path2 = self.selected_path + '/' + log
         cali.data_file_creat(path)
         os.chdir(path)
-        #os.system('mkdir cam0')
-        #os.system('mkdir CVIMG')
+        os.system('mkdir cam0')
+        os.system('mkdir CVIMG')
         os.system('cp /home/cv/new_G2/c_l.py c_l.py')
         self.content.append('当前工作目录切换到：'+path)
         self.save_path = path
@@ -243,8 +243,8 @@ class calibration(QWidget):
                     print(ret)
                     print("已移动到机械臂静态内外参标定点，开始标定")
                     print('P3位置'+str(x)+'数据开始采集')
-                    cali.FE_capture(self.save_path,self.no[x])
-                    cali.RGB_capture(self.save_path,self.no[x])
+                    cali.FE_capture(self.save_path,self.no[x],self.config["DevicePath"]["FE_path"],self.config["Command"]["FE_capture"])
+                    cali.RGB_capture(self.save_path,self.no[x],self.config["DevicePath"]["RGB_path"],self.config["Command"]["RGB_capture"])
                     '''
                     os.chdir(path_TOF)
                     cali.TOF_IR_capture(path_TOF,self.no[x])

@@ -7,9 +7,9 @@ import time
 
 
 
-print (sys.argv[1])
+#print (sys.argv[1])
 client = socket.socket()
-ip_port = ('localhost', 7081)
+ip_port = ("192.168.0.3", 7081)
 client.connect(ip_port)
 
 

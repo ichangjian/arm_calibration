@@ -357,7 +357,7 @@ def imu_fe_capture_end(save_path):
 	
 def FE_capture(save_path,file_name,dutpath,cmd):
 	n = 'xx'
-	while (n[0]!="0") :
+	while (n[0]!="f") :
 		f = os.popen(cmd, "r")
 		shuchu = f.read()
 		f.close()
@@ -375,7 +375,8 @@ def FE_capture(save_path,file_name,dutpath,cmd):
 		if (n==''):
 			n='no image'
 		print(n)
-	os.system('mv ' + dutpath + 'fe.png ' + save_path +"cam0/" +file_name+'.png')
+	os.system('mv ' + dutpath + 'fe.pngleft.png ' + save_path +"cam0/" +file_name+'.png')
+	os.system('rm ' + dutpath + 'fe.pngright.png')
 	return 'FE抓图完成'
 
 def RGB_capture(save_path,file_name,dutpath,cmd):
@@ -389,7 +390,7 @@ def RGB_capture(save_path,file_name,dutpath,cmd):
 		if (n==''):
 			n='no image'
 		print(n)
-	os.system('mv '+dutpath+'rgb.png '+dutpath+"CVIMG"+file_name+'.png')
+	os.system('mv '+dutpath+'rgb.png '+save_path+"CVIMG/"+file_name+'.png')
 	time.sleep(0.1)
 	return 'RGB抓图完成'
 
