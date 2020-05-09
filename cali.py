@@ -61,7 +61,6 @@ def read_hmd_id():
 	print(datetime.datetime.now())
 	f = os.popen(r"adb shell cat sys/fpga_eeprom/glass_id", "r")
 	shuchu = f.read()
-	print(shuchu)
 	f.close()
 	return shuchu[0:8]
 
@@ -224,13 +223,13 @@ def yaml_process():
 	print(T1)
 	print(T2)
 	print(T3)
-	if abs(T1-105)<=5:
+	if abs(T1-111)<=5:
 		if abs(T2-10)<=10:
 			if abs(T3-10)<=10:
-				fnew = open("cam0_G2-sdm845.yaml", "w")
+				fnew = open("cam0_bu.yaml", "w")
 				fnew.write(write_data1)
 				fnew.close()
-				fnew = open("cam1_G2-sdm845.yaml", "w")
+				fnew = open("cam1_bu.yaml", "w")
 				fnew.write(write_data2)
 				fnew.close()
 				return 'ok'
@@ -319,7 +318,7 @@ def write_cali_para():
 def write_cv_para():
 	target_path = '/data/hmdinfo/'
 	os.system('adb shell rm '+target_path+'*')
-	print('写入标定数据到设备')  
+	print('写入标定数据到设备')
 	os.system('adb push rgbtoimu.txt '+target_path)
 	os.system('adb push cam0_G2-sdm845.yaml '+target_path)
 	os.system('adb push cam1_G2-sdm845.yaml '+target_path)
@@ -335,27 +334,27 @@ def write_cv_para():
 
 
 def imu_fe_capture_start():
-    print("已移动到机械臂IMU-FE内外参标定点，开始标定")
-    os.system('adb shell rm -rf /sdcard/slam_data_save')
-    time.sleep(1)
-    os.system('adb shell setprop debug.fisheyeimu.data 4')
-    time.sleep(1)
-    foff = os.popen(r"adb shell slamclienttest", "r")
-    time.sleep(1)
-    return '已经开始采集图像，请稍候'
-
+	print("已移动到机械臂IMU-FE内外参标定点，开始标定")
+	f = os.popen(r"python c_l.py capfeimu","r")
+	shuchu = f.read()
+	f.close()
+	print(shuchu)
+	time.sleep(1)
+	return '已经开始采集图像，请稍候'
 
 def imu_fe_capture_end(save_path):
-    os.system('adb shell setprop debug.fisheyeimu.data 0')
-    time.sleep(1)
-    os.system('adb pull /sdcard/slam_data_save '+ save_path)
-    time.sleep(1)
-    os.system('mv '+save_path+'slam_data_save/imu.csv '+save_path+'slam_data_save/imu0.csv')
-    os.system('mv '+save_path+'slam_data_save/loop.txt '+save_path+'slam_data_save/loop01.txt')
-    print('数据已保存')
-    return '数据已保存'
-
-
+	f = os.popen(r"python c_l.py stopcapfeimu","r")
+	shuchu = f.read()
+	f.close()
+	print(shuchu)
+	time.sleep(1)
+	os.system('mv /run/user/1000/gvfs/smb-share:server=192.168.0.3,share=buff/cam-imu '+ save_path+'cam-imu')
+	time.sleep(1)
+    #os.system('mv '+save_path+'slam_data_save/imu.csv '+save_path+'slam_data_save/imu0.csv')
+    #os.system('mv '+save_path+'slam_data_save/loop.txt '+save_path+'slam_data_save/loop01.txt')
+	print('数据已保存')
+	return '数据已保存'
+	
 def FE_capture(save_path,file_name,dutpath,cmd):
 	n = 'xx'
 	while (n[0]!="0") :
@@ -363,24 +362,20 @@ def FE_capture(save_path,file_name,dutpath,cmd):
 		shuchu = f.read()
 		f.close()
 		print('log'+shuchu)
-		log_info = 'crash'
+		'''log_info = 'crash'
 		result = log_info in shuchu
-		if result : 
+		if result :
 			os.system('adb reboot')
 			print('camera crash, 设备重启中请稍候')
-			time.sleep(35)
+			time.sleep(35)'''
 		time.sleep(2)
-		f = os.popen(r"adb shell ls "+dutpath, "r")
+		f = os.popen(r"ls "+dutpath, "r")
 		n = f.read()
 		f.close()
 		if (n==''):
 			n='no image'
 		print(n)
-	os.system('adb shell mv ' + dutpath + '0.png ' + dutpath + file_name+ '.png')
-	time.sleep(0.1)
-	os.system('adb pull ' + dutpath +' '+ save_path)
-	time.sleep(0.1)
-	os.system('adb shell rm -rf ' + dutpath)
+	os.system('mv ' + dutpath + 'fe.png ' + save_path +"cam0/" +file_name+'.png')
 	return 'FE抓图完成'
 
 def RGB_capture(save_path,file_name,dutpath,cmd):
@@ -388,17 +383,14 @@ def RGB_capture(save_path,file_name,dutpath,cmd):
 	while (n[0]!="r") :
 		os.system(cmd)
 		time.sleep(2)
-		f = os.popen(r"adb shell ls "+dutpath, "r")
+		f = os.popen(r"ls "+dutpath, "r")
 		n = f.read()
 		f.close()
 		if (n==''):
 			n='no image'
 		print(n)
-	os.system('adb shell mv '+dutpath+'rgbpic.png '+dutpath+file_name+'.png')
+	os.system('mv '+dutpath+'rgb.png '+dutpath+"CVIMG"+file_name+'.png')
 	time.sleep(0.1)
-	os.system('adb pull '+ dutpath + ' '+save_path)
-	time.sleep(0.1)
-	os.system('adb shell rm -rf ' + dutpath)
 	return 'RGB抓图完成'
 
 def file_compare(file1,file2):

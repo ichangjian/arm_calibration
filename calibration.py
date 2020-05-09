@@ -165,15 +165,19 @@ class calibration(QWidget):
 
     def cv_data_capture(self):
         phase = 1
-        phase2 = 0
-        log = cali.read_ID()
+        phase2 = 1
+        '''log = cali.read_ID()
         self.content.append('当前设备ID为'+log)
-        log = cali.read_hmd_id()
+        log = cali.read_hmd_id()'''
+        log = "HMD88888"
         self.content.append('当前设备头端ID为'+log)
         path = self.selected_path + '/' + log + '/'
         path2 = self.selected_path + '/' + log
         cali.data_file_creat(path)
         os.chdir(path)
+        #os.system('mkdir cam0')
+        #os.system('mkdir CVIMG')
+        os.system('cp /home/cv/new_G2/c_l.py c_l.py')
         self.content.append('当前工作目录切换到：'+path)
         self.save_path = path
         print(self.save_path)
@@ -185,7 +189,7 @@ class calibration(QWidget):
             #获取标定数据-初始化socket套接字
             sk = socket.socket()
             sk.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
-            sk.bind(("192.168.0.1",7080))
+            sk.bind(("192.168.0.10",7080))
             sk.listen(5)
             conn,address = sk.accept()
             ret = str(conn.recv(1024),encoding="utf-8")
@@ -231,8 +235,8 @@ class calibration(QWidget):
                 path_TOF = path+'TOF/'
                 os.chdir(path_TOF)
                 os.system('cp '+self.kalibr_path+'irconvert irconvert')
-                '''
                 os.chdir(path)
+                '''
                 x = 1
                 while (x<16) :
                     ret = str(conn.recv(1024),encoding="utf-8")
@@ -296,7 +300,7 @@ class calibration(QWidget):
                 os.system('cp '+self.kalibr_path+'cameraindex.csv cam-imu/cameraindex.csv')
                 #os.system('./kal_rgb.sh')
                 #os.system('mv camchain-glasses.yaml rgb_tof.yaml')
-                cali.write_cv_para()
+                #cali.write_cv_para()
                 os.chdir(self.selected_path)
                 os.system('cp -r '+path2+' '+self.back_path)
         conn.close()
