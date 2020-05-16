@@ -3,7 +3,7 @@
 	"Enviroment" : 
 	{
 		"kalibr_path" : "/home/CV/G2_calibration/calib-template/",
-		"back_paht" : "/home/CV/server/",
+		"back_path" : "/home/CV/server/",
 		"dut_path" : "/storage/emulated/0/Android/data/com.tmac.camerapreview/files",
 		"RGB_capture_app" : "rgb_capture.apk",
 		"temp_path" : "",
@@ -14,19 +14,25 @@
 	},
 	"DevicePath" : 
 	{
-		"FE_IMU_path" : "/run/user/1000/gvfs/smb-share:server=192.168.0.3,share=buff/",
-		"FE_path" : "/run/user/1000/gvfs/smb-share:server=192.168.0.3,share=buff/",
-		"RGB_path" : "/run/user/1000/gvfs/smb-share:server=192.168.0.3,share=buff/",
+		"FE_IMU_path" : "/run/user/1000/gvfs/smb-share:server=192.168.0.3,share=buff/cam-imu",
+		"FE_path" : "/run/user/1000/gvfs/smb-share:server=192.168.0.3,share=buff/left.png",
+		"RGB_path" : "/run/user/1000/gvfs/smb-share:server=192.168.0.3,share=buff/rgb.png",
+		"IMU_path" : "/run/user/1000/gvfs/smb-share:server=192.168.0.3,share=buff/imu.csv",
 		"TOF_IR_path" : "/sdcard/sunny/depth/",
 		"TOF_dump_path" : "/sdcard/sunny/"
 	},
 	"Command" : 
 	{
+		"ID_device":"python c_l.py readid",
 		"FE_IMU_capture" : "python c_l.py capfeimu",
 		"FE_capture" : "python c_l.py capfe",
+        "IMU_capture" : "python c_l.py caprgb",
+        "FE_RGB_capture" : "python c_l.py caprgb",
         "RGB_capture" : "python c_l.py caprgb",
         "TOF_IR_capture" : "adb shell tofhwtest 1 1 1 1",
-		"TOF_dump_file" : "adb shell tofhwtest 1 1 1 1"
+		"TOF_dump_file" : "adb shell tofhwtest 1 1 1 1",
+		"Pull_data":"mv"
+
 	},
 	"config_version" : "200309"
 }
