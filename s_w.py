@@ -1,4 +1,4 @@
-import sys
+﻿import sys
 import datetime
 import os
 import socket
@@ -19,26 +19,34 @@ while 1:
     try:
         ret = str(conn.recv(1024),encoding="utf-8")
         if ret == "capfeimu":
-            f = os.popen(r".\capture_fe_imu  D:\\buff\\", "r")
+            f = os.popen(r"capture_fe_imu  D:\\buff\\", "r")
             n = f.read()
             f.close()
         if ret == "stopcapfeimu":
-            f = os.popen(r".\stop_capture_fe_imu", "r")
+            f = os.popen(r"stop_capture_fe_imu", "r")
             n = f.read()
             f.close()
         if ret == "capfe":
-            f = os.popen(r".\capture_fe D:\\buff\\fe.png", "r")
+            f = os.popen(r"capture_fe D:\\buff\\", "r")
             n = f.read()
             f.close()
         if ret == "caprgb":
-            f = os.popen(r".\capture_rgb D:\\buff\\rgb.png", "r")
+            f = os.popen(r"capture_rgb D:\\buff\\rgb.png", "r")
             n = f.read()
             f.close()
         if ret == "capimu":
-            f = os.popen(r"capture_fe.exe save_name", "r")
+            f = os.popen(r"capture_imu D:\\buff\\", "r")
             n = f.read()
             f.close()
-        data = n +"ok"
+        if ret == "stopcapimu":
+            f = os.popen(r"stop_capture_imu D:\\buff\\", "r")
+            n = f.read()
+            f.close()
+        if ret == "readid":
+            f = os.popen(r"GetNewG2SN", "r")
+            n = f.read()
+            f.close()
+        data = n
         conn.sendall(bytes(data,encoding="utf-8"))
     except Exception as e:
         client = None

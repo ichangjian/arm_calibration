@@ -54,7 +54,7 @@ class calibration(QWidget):
         self.btn_f2.clicked.connect(self.cv_data_capture)
         self.btn_f2.setText("2.CV标定（FE+RGB+IMU）")
         layout.addWidget(self.btn_f2)
-
+ 
         self.btn_f3 = QPushButton()
         self.btn_f3.clicked.connect(self.cali_imu)
         self.btn_f3.setText("3.IMU自身标定")
@@ -166,18 +166,19 @@ class calibration(QWidget):
     def cv_data_capture(self):
         phase = 1
         phase2 = 1
-        '''log = cali.read_ID()
+        log = cali.read_ID()
         self.content.append('当前设备ID为'+log)
-        log = cali.read_hmd_id()'''
-        log = "HMD88888"
+        #log = cali.read_hmd_id()
+        #log = "HMD88888"
         self.content.append('当前设备头端ID为'+log)
         path = self.selected_path + '/' + log + '/'
         path2 = self.selected_path + '/' + log
         cali.data_file_creat(path)
         os.chdir(path)
+        os.system('cp '+ self.selected_path +'/c_l.py c_l.py')
         os.system('mkdir cam0')
         os.system('mkdir CVIMG')
-        os.system('cp /home/cv/new_G2/c_l.py c_l.py')
+        #os.system('cp /home/cv/new_G2/c_l.py c_l.py')
         self.content.append('当前工作目录切换到：'+path)
         self.save_path = path
         print(self.save_path)
@@ -309,21 +310,24 @@ class calibration(QWidget):
 
 
     def cali_imu(self):
+        no = ["imu_R.csv","imu_L.csv","imu_D.csv","imu_U.csv","imu_F.csv","imu_B.csv"]
         log = cali.read_ID()
         self.device_ID = log
         self.content.append('当前设备ID为'+log)
-        log = cali.read_hmd_id()
+        #log = cali.read_hmd_id()
         print(log)
-        self.content.append('当前设备头端ID为'+log)
+        #self.content.append('当前设备头端ID为'+log)
         path = self.selected_path + '/' + log + '/'
         os.chdir(path)
+        os.system('cp '+ self.selected_path +'imucal imucal')
         self.content.append('当前工作目录切换到：'+path)
         self.content.append('开始进行IMU标定')
+        f = os.popen(r"mkdir imu", "r")
 
         #获取标定数据-初始化socket套接字
         sk = socket.socket()
         sk.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
-        sk.bind(("192.168.0.1",7080))
+        sk.bind(("192.168.0.10",7080))
         sk.listen(5)
         conn,address = sk.accept()
         ret = str(conn.recv(1024),encoding="utf-8")
@@ -337,49 +341,69 @@ class calibration(QWidget):
         print("Socket通讯建立")
 
         #获取标定数据-P1S1S-IMU标定步骤1
-        step = 1
-        while (step<7) :   
-            conn.sendall(bytes("P4S"+str(step)+"S",encoding="utf-8"))
-            print("已发送下一点位置数据")
-            time.sleep(0.1)
-            ret = str(conn.recv(1024),encoding="utf-8")
-            print(ret)
-            print("已移动到机械臂IMU标定"+str(step)+"号点，开始"+str(step)+"位置标定")
-            time.sleep(14)
-            f = os.popen(r"adb shell testimucal "+str(step), "r")
-            shuchu = f.read()
-            f.close()
-            n=2
-            while(shuchu[0]!='0'):
-                print('标定失败，进行第['+str(n)+']次尝试')
-                f = os.popen(r"adb shell testimucal "+str(step), "r")
+        imu_result=1
+        while(imu_result) :
+            step = 1
+            while (step<7) :
+                conn.sendall(bytes("P4S"+str(step)+"S",encoding="utf-8"))
+                print("已发送下一点位置数据")
+                time.sleep(0.1)
+                ret = str(conn.recv(1024),encoding="utf-8")
+                print(ret)
+                print("已移动到机械臂IMU标定"+str(step)+"号点，开始"+str(step)+"位置标定")
+                time.sleep(14)
+                f = os.popen(r"python c_l.py capimu", "r")
                 shuchu = f.read()
                 f.close()
-                n=n+1
-                if n>6:
-                    print('6次标定都失败，请注意是不是夜深人静，再进行重试')
-                    conn.sendall(bytes("GHOME",encoding="utf-8"))
-                    print("准备移动到装配点")
-                    time.sleep(1)
-                    ret = str(conn.recv(1024),encoding="utf-8")
-                    print(ret)
-                    cali.error_dct(ret,'HOMED')
-                    conn.close()
-                    exit()
-            print("IMU标定"+str(step)+"结果"+shuchu)
-            step=step+1
-            print("准备移动到下一个点")       
-        
+                print(shuchu)
+                time.sleep(2)
+                f = os.popen(r"python c_l.py stopcapimu", "r")
+                shuchu = f.read()
+                f.close()
+                print(shuchu)
+                f = os.popen(r"mv /run/user/1000/gvfs/smb-share:server=192.168.0.3,share=buff/cam-imu/imu0.csv imu/"+no[step-1],"r")
+                f.close()
+                f = os.system("./imucal 1 imu/"+no[step-1])
+                print(f)
+                '''
+                n=2
+                while(shuchu[0]!='0'):
+                    print('标定失败，进行第['+str(n)+']次尝试')
+                    f = os.popen(r"adb shell testimucal "+str(step), "r")
+                    shuchu = f.read()
+                    f.close()
+                    n=n+1
+                    if n>6:
+                        print('6次标定都失败，请注意是不是夜深人静，再进行重试')
+                        conn.sendall(bytes("GHOME",encoding="utf-8"))
+                        print("准备移动到装配点")
+                        time.sleep(1)
+                        ret = str(conn.recv(1024),encoding="utf-8")
+                        print(ret)
+                        cali.error_dct(ret,'HOMED')
+                        conn.close()
+                        exit()
+                '''
+                print("IMU标定"+str(step)+"结果"+shuchu)
+                step=step+1
+                print("准备移动到下一个点")
+            f = os.system(r"./imucal 2 imu/")
+            print(f)
+            imu_result=0
+
+        f = os.popen(r"rm -r /run/user/1000/gvfs/smb-share:server=192.168.0.3,share=buff/cam-imu","r")
+        f.close()
         conn.sendall(bytes("GHOME",encoding="utf-8"))
         print("准备移动到装配点")
-        time.sleep(1)  
+        time.sleep(1)
         
+
         #等待设备到装配点,安装设备
         ret = str(conn.recv(1024),encoding="utf-8")
         print(ret)
         cali.error_dct(ret,'HOMED')
         print('IMU标定完成')
-        os.system('adb pull /data/hmdinfo/AccelBias.txt')
+        #os.system('adb pull /data/hmdinfo/AccelBias.txt')
         os.chdir(self.selected_path)
         self.content.append('IMU标定完成')
         conn.close()
@@ -388,8 +412,8 @@ class calibration(QWidget):
     def read_ID(self):
         log = cali.read_ID()
         self.content.append('当前设备ID为'+log)
-        log = cali.read_hmd_id()
-        self.device_ID = log
+        #log = cali.read_hmd_id()
+        #self.device_ID = log
         self.content.append('当前设备头端ID为'+log)
 
     def creat_dir(self):
@@ -422,7 +446,7 @@ class calibration(QWidget):
         time.sleep(3)
         cali.yaml_process()
         os.chdir(self.selected_path)
-        self.content.append('CV系统标定已完成') 
+        self.content.append('CV系统标定已完成')
 
     def select_save_path(self):
         s_path = QFileDialog.getExistingDirectory(
@@ -452,8 +476,8 @@ class calibration(QWidget):
         x = 1
         while (x<16) :
             print("已移动到机械臂静态内外参标定点，开始标定")
-            cali.FE_capture(self.save_path,self.no[x])
-            cali.RGB_capture(self.save_path,self.no[x])
+            #cali.FE_capture(self.save_path,self.no[x])
+            #cali.RGB_capture(self.save_path,self.no[x])
             x=x+1
 
     def file_value(self):

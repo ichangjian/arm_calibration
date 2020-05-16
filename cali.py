@@ -36,25 +36,18 @@ def device_mount():
 
 def read_ID():
     print(datetime.datetime.now())
-    f = os.popen(r"adb devices", "r")
+    f = os.popen(r"python c_l.py readid", "r")
     shuchu = f.read()
     f.close()
-    # print(shuchu)
-    s = shuchu.split("\n")   # 切割换行
-    # print(s)
-    new = [x for x in s if x != '']  # 去掉空''
-    # print(new)
-    devices = []  # 可能有多个手机设备，获取设备名称
-    for i in new:
-        dev = i.split('\tdevice')
-        if len(dev) >= 2:
-            devices.append(dev[0])
-    if not devices:
-        print("眼镜设备没连上,请连接手机重新执行")
+    print(shuchu)
+    s = shuchu.split("\'")   # 切割换行
+    print(s)
+    if not s[1]:
+        print("眼镜设备没连上,请连接重新执行")
         exit()
     else:
-        print("当前手机设备:%s" % str(devices))
-    return devices[0]
+        print("当前手机设备:%s" % str(s[1]))
+    return s[1]
 
 
 def read_hmd_id():
@@ -357,7 +350,7 @@ def imu_fe_capture_end(save_path):
 	
 def FE_capture(save_path,file_name,dutpath,cmd):
 	n = 'xx'
-	while (n[0]!="f") :
+	while (n[0]!="l") :
 		f = os.popen(cmd, "r")
 		shuchu = f.read()
 		f.close()
@@ -375,8 +368,8 @@ def FE_capture(save_path,file_name,dutpath,cmd):
 		if (n==''):
 			n='no image'
 		print(n)
-	os.system('mv ' + dutpath + 'fe.pngleft.png ' + save_path +"cam0/" +file_name+'.png')
-	os.system('rm ' + dutpath + 'fe.pngright.png')
+	os.system('mv ' + dutpath + 'left.png ' + save_path +"cam0/" +file_name+'.png')
+	os.system('rm ' + dutpath + 'right.png')
 	return 'FE抓图完成'
 
 def RGB_capture(save_path,file_name,dutpath,cmd):
