@@ -59,21 +59,6 @@ class Device():
     def pull_imu_data(self,dst_path):
         self.profile.pull_data(self.profile.path_imu,dst_path)
 
-    def compute_stereoimu(self):
-        pass
-
-    def compute_fergb(self):
-        pass
-
-    def compute_imu_state(self):
-        pass
-
-    def compute_imu_bias(self):
-        pass
-
-    def compute_stereoimu(self):
-        pass
-
 
 def device_data_capture(work_path,log):
     """
@@ -222,90 +207,6 @@ def move_arm_fergb(log=[]):
     ret = str(conn.recv(1024),encoding="utf-8")
     print(ret)
     conn.close()
-
-class Robot():
-    def __init__(self,device):
-        self.conn=None
-        self.device=device
-
-    def __del__(self):
-        if not self.conn is None:
-            self.conn.close()
-
-    def init_socket(self,ip,port):
-        sk = socket.socket()
-        sk.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        sk.bind((ip, port))
-        sk.listen(5)
-        conn, address = sk.accept()
-
-        ret = str(conn.recv(1024), encoding="utf-8")
-        print("接收到设备数据" + ret)
-        time.sleep(0.1)
-        conn.sendall(bytes("cstwo", encoding="utf-8"))
-        print("已发送锁存校验数据")
-        time.sleep(0.1)
-        ret = str(conn.recv(1024), encoding="utf-8")
-        print(ret)
-        print("Socket通讯建立")
-        self.conn=conn
-
-    # 机械臂返回值确定
-    def error_dct(self,rec, comm):
-        if rec != comm:
-            print('机械臂返回错误，请检查后重试')
-            exit()
-    def move_arm_stereoimu(self,log=[]):
-        # 获取标定数据-初始化socket套接字
-        conn = self.conn
-        # 获取标定数据-P2S1S-IMU-FE内外参标定准备
-        conn.sendall(bytes("P3S1S", encoding="utf-8"))
-        print("准备移动到机械臂IMU-FE内外参标定点")
-        time.sleep(1)
-        ret = str(conn.recv(1024), encoding="utf-8")
-        print(ret)
-        self.error_dct(ret, 'P3S1E')
-        print("已移动到机械臂IMU-FE内外参标定点，开始采集")
-        time.sleep(1)
-        self.device.send_command_stereoimu_start()
-        log.append(ret)
-        conn.sendall(bytes("P2S1S", encoding="utf-8"))
-        print("准备移动机械臂")
-
-        # 获取标定数据-P2S1S-IMU-FE内外参标定
-        ret = str(conn.recv(1024), encoding="utf-8")
-        print(ret)
-        if ret != 'P2S1E': exit()
-        self.device.send_command_stereoimu_stop()
-        print('数据已保存')
-
-    def move_arm_fergb(self,log=[]):
-        # 获取标定数据-P3-静态内外参标定
-        conn = self.conn
-        conn.sendall(bytes("P3S1S", encoding="utf-8"))
-        print("准备移动到下一个点")
-
-        x = 1
-        while (x < 16):
-            ret = str(conn.recv(1024), encoding="utf-8")
-            print(ret)
-            print("已移动到机械臂静态内外参标定点，开始标定")
-            print('P3位置' + str(x) + '数据开始采集')
-            self.device.capture_command_fergb()
-            self.device.pull_fe_data("cam0/")
-            self.device.pull_rgb_data("cam1/")
-            print('P3位置' + str(x) + '数据已保存')
-            if x < 10:
-                senddata = "P3S" + str(x) + "S"
-            if x > 9:
-                senddata = "3S" + str(x) + "S"
-            conn.sendall(bytes(senddata, encoding="utf-8"))
-            print("准备移动到下一个点")
-            time.sleep(0.5)
-            x = x + 1
-        ret = str(conn.recv(1024), encoding="utf-8")
-        print(ret)
-
 
 
 

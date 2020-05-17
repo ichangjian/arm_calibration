@@ -2,8 +2,7 @@
 import sys
 from PyQt5.QtWidgets import (QApplication, QFileDialog, QLabel, QPushButton,
                              QTextBrowser, QVBoxLayout, QWidget)
-import calib_device
-
+import calib_ubuntu
 
 class calibration(QWidget):
 
@@ -90,7 +89,7 @@ class calibration(QWidget):
         self.device_ID = ' '
         self.save_path = ' '
         self.work_path = ' '
-        self.__fun=calib_device
+        self.__fun=calib_ubuntu.Ubuntu
     def select_path(self):
         dir_path = QFileDialog.getExistingDirectory(
             self, "choose directory", "")
