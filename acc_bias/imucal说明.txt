@@ -1,0 +1,4 @@
+a.imucal 是imu acc bias的运行程序，会调用libimucal.so
+b.imucal 有两个功能，1-判断imu文件是否静止可用，2-计算acc bias
+c.imucal 判断imu文件是否静止可用的使用方法是：imucal 1 imufile**.csv,运行成功返回0
+d.imucal 计算acc bias的使用方法是：imucal 2 imudir，imudir中包含imu_R.csv，imu_L.csv，imu_D.csv，imu_U.csv，imu_F.csv，imu_B.csv判断通过的文件，运行成功返回0并在当前目录下保存AccelBias.txt
