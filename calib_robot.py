@@ -5,19 +5,19 @@ import socket
 import time
 import os
 
+
 class Robot():
-    def __init__(self,device):
-        self.conn=None
-        self.device=device
+    def __init__(self, device):
+        self.conn = None
+        self.device = device
         self.file_fergb_name = ['0', '0000033330000', '0000066660000', '0000100000000', '0000133330000', '0000166660000', '0000200000000', '0000233330000', '0000266660000', '0000300000000',
-                   '0000333330000', '0000366660000', '0000400000000', '0000433330000', '0000466660000', '0000500000000', '0000533330000']
-     
+                                '0000333330000', '0000366660000', '0000400000000', '0000433330000', '0000466660000', '0000500000000', '0000533330000']
 
     def __del__(self):
         if not self.conn is None:
             self.conn.close()
 
-    def init_socket(self,ip,port):
+    def init_socket(self, ip, port):
         sk = socket.socket()
         sk.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         sk.bind((ip, port))
@@ -33,14 +33,15 @@ class Robot():
         ret = str(conn.recv(1024), encoding="utf-8")
         print(ret)
         print("Socket通讯建立")
-        self.conn=conn
+        self.conn = conn
 
     # 机械臂返回值确定
-    def error_dct(self,rec, comm):
+    def error_dct(self, rec, comm):
         if rec != comm:
             print('机械臂返回错误，请检查后重试')
             exit()
-    def move_arm_stereoimu(self,data_save_path,log=[]):
+
+    def move_arm_stereoimu(self, data_save_path, log=[]):
         # 获取标定数据-初始化socket套接字
         conn = self.conn
         # 获取标定数据-P2S1S-IMU-FE内外参标定准备
@@ -60,12 +61,13 @@ class Robot():
         # 获取标定数据-P2S1S-IMU-FE内外参标定
         ret = str(conn.recv(1024), encoding="utf-8")
         print(ret)
-        if ret != 'P2S1E': exit()
+        if ret != 'P2S1E':
+            exit()
         self.device.send_command_stereoimu_stop()
         print('数据已保存')
         self.device.pull_stereoimu_data(data_save_path)
 
-    def move_arm_fergb(self,fe_save_path,rgb_save_path,log=[]):
+    def move_arm_fergb(self, fe_save_path, rgb_save_path, log=[]):
         # 获取标定数据-P3-静态内外参标定
         conn = self.conn
         conn.sendall(bytes("P3S1S", encoding="utf-8"))
@@ -78,8 +80,10 @@ class Robot():
             print("已移动到机械臂静态内外参标定点，开始标定")
             print('P3位置' + str(x) + '数据开始采集')
             self.device.capture_command_fergb()
-            self.device.pull_fe_data(os.path.join(fe_save_path,self.file_fergb_name[x]))
-            self.device.pull_rgb_data(os.path.join(rgb_save_path,self.file_fergb_name[x]))
+            self.device.pull_fe_data(os.path.join(
+                fe_save_path, self.file_fergb_name[x]))
+            self.device.pull_rgb_data(os.path.join(
+                rgb_save_path, self.file_fergb_name[x]))
             print('P3位置' + str(x) + '数据已保存')
             if x < 10:
                 senddata = "P3S" + str(x) + "S"
@@ -92,8 +96,8 @@ class Robot():
         ret = str(conn.recv(1024), encoding="utf-8")
         print(ret)
 
-    def move_arm_imu(self,log=[]):
-        conn=self.conn
+    def move_arm_imu(self, log=[]):
+        conn = self.conn
 
         # 获取标定数据-P1S1S-IMU标定步骤1
         imu_result = 1
@@ -105,7 +109,8 @@ class Robot():
                 time.sleep(0.1)
                 ret = str(conn.recv(1024), encoding="utf-8")
                 print(ret)
-                print("已移动到机械臂IMU标定" + str(step) + "号点，开始" + str(step) + "位置标定")
+                print("已移动到机械臂IMU标定" + str(step) +
+                      "号点，开始" + str(step) + "位置标定")
                 time.sleep(14)
                 f = os.popen(r"python c_l.py capimu", "r")
                 shuchu = f.read()
@@ -148,7 +153,8 @@ class Robot():
             print(f)
             imu_result = 0
 
-        f = os.popen(r"rm -r /run/user/1000/gvfs/smb-share:server=192.168.0.3,share=buff/cam-imu", "r")
+        f = os.popen(
+            r"rm -r /run/user/1000/gvfs/smb-share:server=192.168.0.3,share=buff/cam-imu", "r")
         f.close()
         conn.sendall(bytes("GHOME", encoding="utf-8"))
         print("准备移动到装配点")

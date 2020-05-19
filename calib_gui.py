@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import (QApplication, QFileDialog, QLabel, QPushButton,
                              QTextBrowser, QVBoxLayout, QWidget)
 import calib_ubuntu
 
+
 class calibration(QWidget):
 
     def __init__(self, parent=None):
@@ -13,7 +14,7 @@ class calibration(QWidget):
         # with open('calib_profile.json', 'r') as f:
         #     config = json.load(f)
         # self.config = config
- 
+
         self.label_state = QLabel()
         self.label_state.setText("状态显示")
         layout.addWidget(self.label_state)
@@ -56,12 +57,14 @@ class calibration(QWidget):
         layout.addWidget(self.btn_read_ID)
 
         self.btn_capture_stereoimu_start = QPushButton()
-        self.btn_capture_stereoimu_start.clicked.connect(self.capture_stereoimu_start_clk)
+        self.btn_capture_stereoimu_start.clicked.connect(
+            self.capture_stereoimu_start_clk)
         self.btn_capture_stereoimu_start.setText("SLAM标定开始抓图")
         layout.addWidget(self.btn_capture_stereoimu_start)
 
         self.btn_capture_stereoimu_stop = QPushButton()
-        self.btn_capture_stereoimu_stop.clicked.connect(self.capture_stereoimu_stop_clk)
+        self.btn_capture_stereoimu_stop.clicked.connect(
+            self.capture_stereoimu_stop_clk)
         self.btn_capture_stereoimu_stop.setText("SLAM标定结束抓图")
         layout.addWidget(self.btn_capture_stereoimu_stop)
 
@@ -74,7 +77,7 @@ class calibration(QWidget):
         self.btn_save_path.clicked.connect(self.save_path_clk)
         self.btn_save_path.setText("选择保存路径")
         layout.addWidget(self.btn_save_path)
-    
+
         self.btn_capture_fe = QPushButton()
         self.btn_capture_fe.clicked.connect(self.capture_fe_clk)
         self.btn_capture_fe.setText("FE抓图")
@@ -89,7 +92,7 @@ class calibration(QWidget):
         self.device_ID = ' '
         self.save_path = ' '
         self.work_path = ' '
-        self.__fun=calib_ubuntu.Ubuntu("calib_profile.json")
+        self.__fun = calib_ubuntu.Ubuntu("calib_profile.json")
 
     def select_path(self):
         dir_path = QFileDialog.getExistingDirectory(
@@ -108,7 +111,7 @@ class calibration(QWidget):
         pass
 
     def read_ID_clk(self):
-        pass
+        self.__fun.read_ID_clk()
 
     def capture_stereoimu_start_clk(self):
         pass
@@ -127,6 +130,7 @@ class calibration(QWidget):
 
     def capture_rgb_clk(self):
         pass
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
