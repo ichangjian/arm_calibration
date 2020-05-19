@@ -25,8 +25,12 @@
 	{
 		"ID_device":"python c_l.py readid",
 		"FE_IMU_capture" : "python c_l.py capfeimu",
+		"FE_IMU_capture_start":"",
+		"FE_IMU_capture_end":"",
 		"FE_capture" : "python c_l.py capfe",
-        "IMU_capture" : "python c_l.py caprgb",
+		"IMU_capture" : "python c_l.py caprgb",
+		"IMU_capture_start":"",
+		"IMU_capture_end":"",
         "FE_RGB_capture" : "python c_l.py caprgb",
         "RGB_capture" : "python c_l.py caprgb",
         "TOF_IR_capture" : "adb shell tofhwtest 1 1 1 1",

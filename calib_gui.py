@@ -89,15 +89,17 @@ class calibration(QWidget):
         self.device_ID = ' '
         self.save_path = ' '
         self.work_path = ' '
-        self.__fun=calib_ubuntu.Ubuntu
+        self.__fun=calib_ubuntu.Ubuntu("calib_profile.json")
+
     def select_path(self):
         dir_path = QFileDialog.getExistingDirectory(
             self, "choose directory", "")
         self.work_path = dir_path
+        self.__fun.set_work_path(self.work_path)
         self.content_log.append('当前选择目录为：'+self.work_path)
 
     def device_calib_clk(self):
-        self.__fun.device_data_capture(self.content_log)
+        self.__fun.device_calib_clk(self.content_log)
 
     def imu_calib_clk(self):
         pass

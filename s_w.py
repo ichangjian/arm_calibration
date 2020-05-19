@@ -26,6 +26,14 @@ while 1:
             f = os.popen(r"stop_capture_fe_imu", "r")
             n = f.read()
             f.close()
+        if ret == "capfergb":
+            f = os.popen(r"capture_fe D:\\buff\\", "r")
+            n = f.read()
+            f.close()
+            time.sleep(1)
+            f = os.popen(r"capture_rgb D:\\buff\\rgb.png", "r")
+            n = f.read()
+            f.close()
         if ret == "capfe":
             f = os.popen(r"capture_fe D:\\buff\\", "r")
             n = f.read()

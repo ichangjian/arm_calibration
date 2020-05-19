@@ -9,6 +9,9 @@ class Robot():
     def __init__(self,device):
         self.conn=None
         self.device=device
+        self.file_fergb_name = ['0', '0000033330000', '0000066660000', '0000100000000', '0000133330000', '0000166660000', '0000200000000', '0000233330000', '0000266660000', '0000300000000',
+                   '0000333330000', '0000366660000', '0000400000000', '0000433330000', '0000466660000', '0000500000000', '0000533330000']
+     
 
     def __del__(self):
         if not self.conn is None:
@@ -37,7 +40,7 @@ class Robot():
         if rec != comm:
             print('机械臂返回错误，请检查后重试')
             exit()
-    def move_arm_stereoimu(self,log=[]):
+    def move_arm_stereoimu(self,data_save_path,log=[]):
         # 获取标定数据-初始化socket套接字
         conn = self.conn
         # 获取标定数据-P2S1S-IMU-FE内外参标定准备
@@ -60,8 +63,9 @@ class Robot():
         if ret != 'P2S1E': exit()
         self.device.send_command_stereoimu_stop()
         print('数据已保存')
+        self.device.pull_stereoimu_data(data_save_path)
 
-    def move_arm_fergb(self,log=[]):
+    def move_arm_fergb(self,fe_save_path,rgb_save_path,log=[]):
         # 获取标定数据-P3-静态内外参标定
         conn = self.conn
         conn.sendall(bytes("P3S1S", encoding="utf-8"))
@@ -74,8 +78,8 @@ class Robot():
             print("已移动到机械臂静态内外参标定点，开始标定")
             print('P3位置' + str(x) + '数据开始采集')
             self.device.capture_command_fergb()
-            self.device.pull_fe_data("cam0/")
-            self.device.pull_rgb_data("cam1/")
+            self.device.pull_fe_data(os.path.join(fe_save_path,self.file_fergb_name[x]))
+            self.device.pull_rgb_data(os.path.join(rgb_save_path,self.file_fergb_name[x]))
             print('P3位置' + str(x) + '数据已保存')
             if x < 10:
                 senddata = "P3S" + str(x) + "S"

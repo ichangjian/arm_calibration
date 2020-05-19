@@ -163,8 +163,8 @@ def kalibr2slam(stereo_yaml,imucam_yaml,description=''):
 	write_cam1_yaml(cam1_internal,cam1_distortion,imu_cam1_time,cam1_imu_transformation,description)
 
 
-file1="/media/hi/warehouse/G2-clb/slamdata-hte01/2/camchain-glasses2.yaml"
-file2="/media/hi/warehouse/G2-clb/slamdata-hte01/2/camchain-imucam-glasses2.yaml"
+# file1="/media/hi/warehouse/G2-clb/slamdata-hte01/2/camchain-glasses2.yaml"
+# file2="/media/hi/warehouse/G2-clb/slamdata-hte01/2/camchain-imucam-glasses2.yaml"
 
 if __name__ == '__main__':
 	if len(sys.argv)<3:

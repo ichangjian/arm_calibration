@@ -28,7 +28,7 @@ class Profile():
         config = json.load(f)
         #后续添加判断命令是否存在
         self.cmd_stereoimu_start=config["Command"]["FE_IMU_capture_start"]
-        self.cmd_stereoimu_start=config["Command"]["FE_IMU_capture_start"]
+        self.cmd_stereoimu_end=config["Command"]["FE_IMU_capture_end"]
         self.cmd_fergb=config["Command"]["FE_RGB_capture"]
         self.cmd_imu=config["Command"]["IMU_capture_start"]
 

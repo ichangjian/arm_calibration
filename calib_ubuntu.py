@@ -1,56 +1,133 @@
 #!/usr/bin/python3
-
+import os
 import calib_robot
 import calib_device
+import yaml_format
 
 class Ubuntu():
     def __init__(self,file_profile):
         self.device=calib_device.Device(file_profile)
         self.robot=calib_robot.Robot(self.device)
+        
+        self.work_path=""
+        self.save_rgb_dir="fe-rgb/cam1"
+        self.save_fe_dir="fe-rgb/cam0"
+        self.save_imu_dir="imu"
+        self.save_stereoimu_dir="cam-imu"
+        self.save_path=""
 
-    def compute_stereoimu(self):
+    
+    def set_work_path(self,path):
+        self.work_path=path
+
+    def read_ID_clk(self):
+        self.device_id=self.device.get_device_ID()
+
+    def compute_stereoimu(self,log=[]):
+        log.append("计算stereoimu")
+        os.chdir(self.save_path)
+        os.system(".sh"+os.path.join(self.save_path,self.save_stereoimu_dir))
+        
+    def compute_fergb(self,log=[]):
+        log.append("计算fergb")
+        os.chdir(self.save_path)
+        os.system(".sh"+os.path.join(self.save_path,self.save_stereoimu_dir))
+        
+
+    def compute_imu_state(self,log=[]):
         pass
 
-    def compute_fergb(self):
+    def compute_imu_bias(self,log=[]):
         pass
 
-    def compute_imu_state(self):
-        pass
 
-    def compute_imu_bias(self):
-        pass
-
-    def compute_stereoimu(self):
-        pass
-
-    def device_calib_clk(self):
-        self.__fun.device_data_capture(self.content_log)
+    def device_calib_clk(self,log=[]):
+        self.capture_device_cv(log)
+        self.compute_stereoimu(log)
+        self.compute_fergb(log)
 
     def imu_calib_clk(self):
-        self.robot.im
+        pass
 
     def file_check_clk(self):
         pass
 
-    def read_ID_clk(self):
-        return self.device.get_device_ID()
+        
+    def capture_device_cv(self,log=[]):
+
+        self.read_ID_clk()
+        log.append("设备ID:"+self.device_id)
+        self.set_save_path(os.path.join(self.work_path,self.device_id))
+
+        self.robot.move_arm_stereoimu(os.path.join(self.save_path,self.save_stereoimu_dir),log)
+        self.robot.move_arm_fergb(os.path.join(self.save_path,self.save_fe_dir),os.path.join(self.save_path,self.save_rgb_dir),log)
 
     def capture_stereoimu_start_clk(self):
+
         self.device.capture_command_stereoimu_start()
 
     def capture_stereoimu_stop_clk(self):
         self.device.capture_command_stereoimu_stop()
 
-    def compute_stereoimu_clk(self):
-        self.device.compute_stereoimu()
 
-    def save_path_clk(self):
-        pass
+    def set_save_path(self,path):
+        if not os.path.exists(path):
+            os.system("rm -r "+path)
+        
+        os.mkdir(path)        
+        self.save_path=path
+        
 
-    def capture_fe_clk(self):
-        self.device.capture_command_fe()
+    def capture_fe_clk(self,file_fe_name):
+        if not self.device.capture_command_fe():
+            print("capture failed")
+            return False
 
-    def capture_rgb_clk(self):
-        self.device.capture_command_rgb()
+        if self.save_path=="":
+            print("please select work space")
+            return False
+
+        save_fe_path=os.path.join(self.save_path,self.save_fe_dir)
+        if not os.path.exists(save_fe_path):
+            os.makedirs(save_fe_path)
+
+        self.device.pull_fe_data(os.path.join(save_fe_path,file_fe_name))
+
+    def capture_rgb_clk(self,file_rgb_name):
+        if not self.device.capture_command_rgb():
+            print("capture failed")
+            return False
+
+        if self.save_path=="":
+            print("please select work space")
+            return False
+
+        save_rgb_path=os.path.join(self.save_path,self.save_rgb_dir)
+        if not os.path.exists(save_rgb_path):
+            os.makedirs(save_rgb_path)
+
+        self.device.pull_rgb_data(os.path.join(save_rgb_path,file_rgb_name))
+
+    def capture_fergb_clk(self,file_fergb_name):
+        if not self.device.capture_command_fergb():
+            print("capture failed")
+            return False
+
+        if self.save_path=="":
+            print("please select work space")
+            return False
+
+        save_fe_path=os.path.join(self.save_path,self.save_fe_dir)
+        if not os.path.exists(save_fe_path):
+            os.makedirs(save_fe_path)
+
+        self.device.pull_fe_data(os.path.join(save_fe_path,file_fergb_name))
+
+
+        save_rgb_path=os.path.join(self.save_path,self.save_rgb_dir)
+        if not os.path.exists(save_rgb_path):
+            os.makedirs(save_rgb_path)
+
+        self.device.pull_rgb_data(os.path.join(save_rgb_path,file_fergb_name))
 
 
