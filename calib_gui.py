@@ -111,25 +111,30 @@ class calibration(QWidget):
         pass
 
     def read_ID_clk(self):
-        self.__fun.read_ID_clk()
+        self.__fun.read_ID_clk(self.content_log)
 
     def capture_stereoimu_start_clk(self):
-        pass
+        self.__fun.capture_stereoimu_start_clk()
 
     def capture_stereoimu_stop_clk(self):
-        pass
+        self.__fun.capture_stereoimu_stop_clk()
+
 
     def compute_stereoimu_clk(self):
         pass
 
     def save_path_clk(self):
-        pass
+        dir_path = QFileDialog.getExistingDirectory(
+            self, "choose directory", "")
+        self.save_path = dir_path
+        self.__fun.save_path=(self.save_path)
+        print('sp：'+self.save_path)
 
     def capture_fe_clk(self):
-        pass
+        self.__fun.capture_fe_clk("fe_left.png")
 
     def capture_rgb_clk(self):
-        pass
+        self.__fun.capture_rgb_clk("rgb.png")
 
 
 if __name__ == '__main__':

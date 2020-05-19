@@ -16,13 +16,14 @@ class Device():
     def get_device_ID(self, log=[]):
         output = self.profile.send_command(self.profile.cmd_id)
         s = output.split("\'")  # 切割换行
-        log.append(s)
+        
         print(s)
         if not s[1]:
             print("设备没连上,请连接重新执行")
             exit()
         else:
             print("当前设备:%s" % str(s[1]))
+            log.append("当前设备:%s" % str(s[1]))
         return s[1]
 
     def capture_command_stereoimu_start(self, log=[]):

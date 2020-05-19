@@ -15,15 +15,15 @@
 		"FE_IMU_path": "/run/user/1000/gvfs/smb-share:server=192.168.0.3,share=buff/cam-imu",
 		"FE_path": "/run/user/1000/gvfs/smb-share:server=192.168.0.3,share=buff/left.png",
 		"RGB_path": "/run/user/1000/gvfs/smb-share:server=192.168.0.3,share=buff/rgb.png",
-		"IMU_path": "/run/user/1000/gvfs/smb-share:server=192.168.0.3,share=buff/imu.csv",
+		"IMU_path": "/run/user/1000/gvfs/smb-share:server=192.168.0.3,share=buff/cam-imu/imu.csv",
 		"TOF_IR_path": "/sdcard/sunny/depth/",
 		"TOF_dump_path": "/sdcard/sunny/"
 	},
 	"Command": {
 		"ID_device": "python c_l.py readid",
 		"FE_IMU_capture": "python c_l.py capfeimu",
-		"FE_IMU_capture_start": "",
-		"FE_IMU_capture_end": "",
+		"FE_IMU_capture_start": "python c_l.py capfeimu",
+		"FE_IMU_capture_stop": "python c_l.py stopcapfeimu",
 		"FE_capture": "python c_l.py capfe",
 		"IMU_capture": "python c_l.py caprgb",
 		"IMU_capture_start": "",

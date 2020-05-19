@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import os
+import time
 import calib_robot
 import calib_device
 import yaml_format
@@ -20,8 +21,8 @@ class Ubuntu():
     def set_work_path(self, path):
         self.work_path = path
 
-    def read_ID_clk(self):
-        self.device_id = self.device.get_device_ID()
+    def read_ID_clk(self,log=[]):
+        self.device_id = self.device.get_device_ID(log)
         print(self.device_id)
 
     def compute_stereoimu(self, log=[]):
@@ -63,17 +64,22 @@ class Ubuntu():
             self.save_path, self.save_rgb_dir), log)
 
     def capture_stereoimu_start_clk(self):
+        if self.save_path == "":
+            print("please select work space")
+            return False
 
         self.device.capture_command_stereoimu_start()
 
     def capture_stereoimu_stop_clk(self):
         self.device.capture_command_stereoimu_stop()
+        time.sleep(0.5)
+        self.device.pull_stereoimu_data(self.save_path)
 
     def set_save_path(self, path):
         if not os.path.exists(path):
-            os.system("rm -r "+path)
+            pass #os.system("rm -r "+path)
 
-        os.mkdir(path)
+        # os.mkdir(path)
         self.save_path = path
 
     def capture_fe_clk(self, file_fe_name):
@@ -85,10 +91,11 @@ class Ubuntu():
             print("please select work space")
             return False
 
-        save_fe_path = os.path.join(self.save_path, self.save_fe_dir)
+        save_fe_path = self.save_path #os.path.join(self.save_path, self.save_fe_dir)
         if not os.path.exists(save_fe_path):
             os.makedirs(save_fe_path)
 
+        time.sleep(0.5)
         self.device.pull_fe_data(os.path.join(save_fe_path, file_fe_name))
 
     def capture_rgb_clk(self, file_rgb_name):
@@ -100,10 +107,10 @@ class Ubuntu():
             print("please select work space")
             return False
 
-        save_rgb_path = os.path.join(self.save_path, self.save_rgb_dir)
+        save_rgb_path = self.save_path#os.path.join(self.save_path, self.save_rgb_dir)
         if not os.path.exists(save_rgb_path):
             os.makedirs(save_rgb_path)
-
+        time.sleep(0.5)
         self.device.pull_rgb_data(os.path.join(save_rgb_path, file_rgb_name))
 
     def capture_fergb_clk(self, file_fergb_name):
