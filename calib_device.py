@@ -51,6 +51,9 @@ class Device():
         return True
 
     def pull_stereoimu_data(self, dst_path):
+        if os.path.exists(dst_path):
+            os.system("rm -r "+dst_path)
+        os.makedirs(dst_path)
         self.profile.pull_data(self.profile.path_stereoimu, dst_path)
 
     def pull_fe_data(self, dst_path):

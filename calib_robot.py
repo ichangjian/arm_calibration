@@ -53,7 +53,7 @@ class Robot():
         self.error_dct(ret, 'P3S1E')
         print("已移动到机械臂IMU-FE内外参标定点，开始采集")
         time.sleep(1)
-        self.device.send_command_stereoimu_start()
+        self.device.capture_command_stereoimu_start()
         log.append(ret)
         conn.sendall(bytes("P2S1S", encoding="utf-8"))
         print("准备移动机械臂")
@@ -63,8 +63,9 @@ class Robot():
         print(ret)
         if ret != 'P2S1E':
             exit()
-        self.device.send_command_stereoimu_stop()
+        self.device.capture_command_stereoimu_stop()
         print('数据已保存')
+
         self.device.pull_stereoimu_data(data_save_path)
 
     def move_arm_fergb(self, fe_save_path, rgb_save_path, log=[]):
@@ -168,4 +169,4 @@ class Robot():
         # os.system('adb pull /data/hmdinfo/AccelBias.txt')
         os.chdir(self.selected_path)
         self.content.append('IMU标定完成')
-        conn.close()
+        # conn.close()

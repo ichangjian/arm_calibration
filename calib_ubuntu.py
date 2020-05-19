@@ -10,6 +10,7 @@ class Ubuntu():
     def __init__(self, file_profile):
         self.device = calib_device.Device(file_profile)
         self.robot = calib_robot.Robot(self.device)
+        self.robot.init_socket("192.168.0.10",7080)
 
         self.work_path = ""
         self.save_rgb_dir = "fe-rgb/cam1"
@@ -63,9 +64,9 @@ class Ubuntu():
         self.set_save_path(os.path.join(self.work_path, self.device_id))
 
         self.robot.move_arm_stereoimu(os.path.join(
-            self.save_path, self.save_stereoimu_dir), log)
-        self.robot.move_arm_fergb(os.path.join(self.save_path, self.save_fe_dir), os.path.join(
-            self.save_path, self.save_rgb_dir), log)
+            self.save_path), log)
+        # self.robot.move_arm_fergb(os.path.join(self.save_path, self.save_fe_dir), os.path.join(
+            # self.save_path, self.save_rgb_dir), log)
 
     def capture_stereoimu_start_clk(self):
         if self.save_path == "":
@@ -80,10 +81,11 @@ class Ubuntu():
         self.device.pull_stereoimu_data(self.save_path)
 
     def set_save_path(self, path):
-        if not os.path.exists(path):
-            pass #os.system("rm -r "+path)
+        print(path)
+        if os.path.exists(path):
+            os.system("rm -r "+path)
 
-        # os.mkdir(path)
+        os.makedirs(path)
         self.save_path = path
 
     def capture_fe_clk(self, file_fe_name):
