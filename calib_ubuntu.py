@@ -17,6 +17,10 @@ class Ubuntu():
         self.save_imu_dir = "imu"
         self.save_stereoimu_dir = "cam-imu"
         self.save_path = ""
+        self.kalibr_path=self.device.profile.path_kalibr
+        self.stereo_imu_sh="kalibr-stereo-imu.sh"
+        self.feleft_rgb_sh="kalibr-fe-rgb.sh"
+        self.sh_path=os.path.split(os.path.realpath(__file__))[0]
 
     def set_work_path(self, path):
         self.work_path = path
@@ -28,12 +32,12 @@ class Ubuntu():
     def compute_stereoimu(self, log=[]):
         log.append("计算stereoimu")
         os.chdir(self.save_path)
-        os.system(".sh"+os.path.join(self.save_path, self.save_stereoimu_dir))
+        os.system(os.path.join(self.sh_path,self.stereo_imu_sh)+" "+self.kalibr_path+" "+os.path.join(self.save_path, self.save_stereoimu_dir))
 
     def compute_fergb(self, log=[]):
         log.append("计算fergb")
         os.chdir(self.save_path)
-        os.system(".sh"+os.path.join(self.save_path, self.save_stereoimu_dir))
+        os.system(os.path.join(self.sh_path,self.feleft_rgb_sh)+" "+self.kalibr_path+" "+os.path.join(self.save_path, self.save_rgb_dir+"/.."))
 
     def compute_imu_state(self, log=[]):
         pass
@@ -83,12 +87,12 @@ class Ubuntu():
         self.save_path = path
 
     def capture_fe_clk(self, file_fe_name):
-        if not self.device.capture_command_fe():
-            print("capture failed")
-            return False
-
         if self.save_path == "":
             print("please select work space")
+            return False
+
+        if not self.device.capture_command_fe():
+            print("capture failed")
             return False
 
         save_fe_path = self.save_path #os.path.join(self.save_path, self.save_fe_dir)
@@ -114,12 +118,12 @@ class Ubuntu():
         self.device.pull_rgb_data(os.path.join(save_rgb_path, file_rgb_name))
 
     def capture_fergb_clk(self, file_fergb_name):
-        if not self.device.capture_command_fergb():
-            print("capture failed")
-            return False
-
         if self.save_path == "":
             print("please select work space")
+            return False
+
+        if not self.device.capture_command_fergb():
+            print("capture failed")
             return False
 
         save_fe_path = os.path.join(self.save_path, self.save_fe_dir)

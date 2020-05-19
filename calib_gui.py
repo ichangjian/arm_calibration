@@ -121,7 +121,7 @@ class calibration(QWidget):
 
 
     def compute_stereoimu_clk(self):
-        pass
+        self.__fun.compute_stereoimu(self.content_log)
 
     def save_path_clk(self):
         dir_path = QFileDialog.getExistingDirectory(

@@ -1,7 +1,7 @@
 {
 	"DeviceName": "New_G2",
 	"Enviroment": {
-		"kalibr_path": "/home/CV/G2_calibration/calib-template/",
+		"kalibr_path": "~/kalibr2-cde",
 		"back_path": "/home/CV/server/",
 		"dut_path": "/storage/emulated/0/Android/data/com.tmac.camerapreview/files",
 		"RGB_capture_app": "rgb_capture.apk",
@@ -21,13 +21,11 @@
 	},
 	"Command": {
 		"ID_device": "python c_l.py readid",
-		"FE_IMU_capture": "python c_l.py capfeimu",
 		"FE_IMU_capture_start": "python c_l.py capfeimu",
 		"FE_IMU_capture_stop": "python c_l.py stopcapfeimu",
 		"FE_capture": "python c_l.py capfe",
-		"IMU_capture": "python c_l.py caprgb",
-		"IMU_capture_start": "",
-		"IMU_capture_end": "",
+		"IMU_capture_start": "python c_l.py capimu",
+		"IMU_capture_stop": "python c_l.py stopcapimu",
 		"FE_RGB_capture": "python c_l.py caprgb",
 		"RGB_capture": "python c_l.py caprgb",
 		"TOF_IR_capture": "adb shell tofhwtest 1 1 1 1",
